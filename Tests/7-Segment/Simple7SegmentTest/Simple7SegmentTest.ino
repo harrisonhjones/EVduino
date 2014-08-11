@@ -1,8 +1,8 @@
 //Pin Assignments (You should change these)
-const int CLK       = 9;           //Connected to TPIC pin 13: SRCLK (aka Clock)
-const int LATCH     = 10;          //Connected to TPIC pin 12: RCLK (aka Latch/load/CS/SS...)
-const int OE        = 11;          //Connected to TPIC pin 9: OE (Output Enable)
-const int DOUT      = 12;          //Connected to TPIC pin 3: SER (aka MOSI)
+const int CLK       = 12;           //Connected to TPIC pin 13: SRCLK (aka Clock) / CLK
+const int LATCH     = 11;          //Connected to TPIC pin 12: RCLK (aka Latch/load/CS/SS...) / RCK
+const int OE        = 10;          //Connected to TPIC pin 9: OE (Output Enable) / G
+const int DOUT      = 9;          //Connected to TPIC pin 3: SER (aka MOSI) / SER IN
 
 void setup()
 {
