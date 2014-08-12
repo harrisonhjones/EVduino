@@ -18,7 +18,7 @@ void setup()
   pinMode(10, OUTPUT);     // change this to 53 on a mega
 
   // open the welcome file for reading
-  myFile = SD.open("welcome.txt");
+  myFile = SD.open("WELCOME.TXT");
   
   if (myFile) {
     Serial.println("Welcome Text: ");
@@ -29,7 +29,7 @@ void setup()
     // close the file:
     myFile.close();
   } else {
-    Serial.println("error opening welcome.txt");
+    Serial.println("error opening WELCOME.TXT");
   };
 }
 
