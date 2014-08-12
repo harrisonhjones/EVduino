@@ -49,9 +49,11 @@ int showSpeed(int speed)
   }
   
   if(speedDigitCounter == 3)
+  {
     speedDigits[1] = 9;
     speedDigits[0] = 9;
-
+  }
+  
   setDisplay(speedDigits[1], speedDigits[0]);
   return 0;
 }
