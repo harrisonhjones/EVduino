@@ -27,7 +27,7 @@ void setDisplay(int value1, int value2)
   
   digitalWrite(LATCH,LOW);      
   shiftOut(DOUT,CLK,LSBFIRST,numTable[value2]);
-  shiftOut(DOUT,CLK,LSBFIRST,numTable[value2]);
+  shiftOut(DOUT,CLK,LSBFIRST,numTable[value1]);
   digitalWrite(LATCH,HIGH); 
 }
 
