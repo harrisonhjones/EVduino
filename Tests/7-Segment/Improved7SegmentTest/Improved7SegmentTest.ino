@@ -71,28 +71,26 @@ void setup()
   //7-Segment Display Init
   digitalWrite(OE,LOW);        //Enables SR Operation
   
+  // Randomize the random function by seeding it with the contents of analog read which, if left unconnected, should be noisy
+  randomSeed(analogRead(0));
+
+  // Show 00
   showSpeed(0);
-  delay(1000);
-  showSpeed(1000);
-  delay(1000);
-  showSpeed(12);
-  delay(1000);
-  showSpeed(24);
-  delay(1000);
-  showSpeed(15);
-  delay(1000);
-  showSpeed(115);
-  delay(1000);
-  showSpeed(87);
-  delay(1000);
-  showSpeed(0);
-  delay(1000);
+  delay(500);
+  
+  // Test numbers > 99. Should show 99
+  showSpeed(100);
+  delay(500);
+  
+  // Test numbers < 0. Should show 00
   showSpeed(-5);
-  delay(1000);
+  delay(500);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
+  // Show speeds randomly between 0 and 99
+  showSpeed(random(0,100));
+  delay(500);
   
 }
 
