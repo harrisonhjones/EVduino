@@ -24,14 +24,21 @@ void setup()
   else {
     Serial.println("NO");
     // open a new file and immediately close it:
-    Serial.println("Creating WELCOME.TXT...");
-    myFile = SD.open("WELCOME.TXT", FILE_WRITE);
-    myFile.print("Default Welcome Text");
-    myFile.close();
+    Serial.println("Creating welcome.txt...");
+    myFile = SD.open("welcome.txt", FILE_WRITE);
+    if(myFile)
+    {
+      myFile.print("Default Welcome Text");
+      myFile.close();
+    }
+    else
+    {
+      Serial.println("Error Opening welcome.txt for writing");
+    }
   }
 
   // open the welcome file for reading
-  myFile = SD.open("WELCOME.TXT");
+  myFile = SD.open("welcome.txt", FILE_READ);
   
   if (myFile) {
     Serial.println("Welcome Text: ");
@@ -42,7 +49,7 @@ void setup()
     // close the file:
     myFile.close();
   } else {
-    Serial.println("Error Opening WELCOME.TXT");
+    Serial.println("Error Opening welcome.txt for reading");
   };
 }
 
