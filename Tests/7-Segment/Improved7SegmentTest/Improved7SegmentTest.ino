@@ -26,8 +26,8 @@ void setDisplay(int value1, int value2)
   Serial.println(" mph");
   
   digitalWrite(LATCH,LOW);      
-  shiftOut(DOUT,CLK,LSBFIRST,value2);
-  shiftOut(DOUT,CLK,LSBFIRST,value2);
+  shiftOut(DOUT,CLK,LSBFIRST,numTable[value2]);
+  shiftOut(DOUT,CLK,LSBFIRST,numTable[value2]);
   digitalWrite(LATCH,HIGH); 
 }
 
