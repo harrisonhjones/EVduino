@@ -16,6 +16,19 @@ void setup()
 
   Serial.print("\nInitializing SD card...");
   pinMode(10, OUTPUT);     // change this to 53 on a mega
+  
+  Serial.print("Checking if welcome.txt exists: ");
+  if (SD.exists("WELCOME.TXT")) {
+    Serial.println("YES");
+  }
+  else {
+    Serial.println("NO");
+    // open a new file and immediately close it:
+    Serial.println("Creating WELCOME.TXT...");
+    myFile = SD.open("WELCOME.TXT", FILE_WRITE);
+    myFile.print("Default Welcome Text");
+    myFile.close();
+  }
 
   // open the welcome file for reading
   myFile = SD.open("WELCOME.TXT");
@@ -29,7 +42,7 @@ void setup()
     // close the file:
     myFile.close();
   } else {
-    Serial.println("error opening WELCOME.TXT");
+    Serial.println("Error Opening WELCOME.TXT");
   };
 }
 
