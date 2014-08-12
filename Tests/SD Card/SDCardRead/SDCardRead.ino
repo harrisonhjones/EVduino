@@ -13,6 +13,15 @@ void setup()
     ; // wait for serial port to connect. Needed for Leonardo only
   }
 
+  if (!SD.begin(chipSelect)) {
+    Serial.println("initialization failed. Things to check:");
+    Serial.println("* is a card is inserted?");
+    Serial.println("* Is your wiring correct?");
+    Serial.println("* did you change the chipSelect pin to match your shield or module?");
+    return;
+  } else {
+   Serial.println("Wiring is correct and a card is present."); 
+  }
 
   Serial.print("\nInitializing SD card...");
   pinMode(10, OUTPUT);     // change this to 53 on a mega
