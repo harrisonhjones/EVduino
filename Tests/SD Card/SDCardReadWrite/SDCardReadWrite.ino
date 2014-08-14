@@ -5,7 +5,7 @@ const int chipSelect = 10;
 
 File myFile;
 
-int sdCardFileSetup(String filename, String defaultText)
+int sdCardFileSetup(char *filename, String defaultText)
 {
   Serial.print("INFO:Checking if '");
   Serial.print(filename);
@@ -29,7 +29,7 @@ int sdCardFileSetup(String filename, String defaultText)
       {
         myFile.print("Default Welcome Text");
         myFile.close();
-        Serial.println("INFO: Default text write success")
+        Serial.println("INFO: Default text write success");
         return 0;
       }
       else
@@ -43,7 +43,7 @@ int sdCardFileSetup(String filename, String defaultText)
 
 }
 
-void showSDCardFileContents(String filename)
+void showSDCardFileContents(char *filename)
 {
   // open the welcome file for reading
   myFile = SD.open(filename, FILE_READ);
@@ -100,11 +100,11 @@ void setup()
 
   if(sdCardSetup()==0)  //No errors setting up the SD card
   {
-    Serial.println("INFO:SD Card is setup and files are present")
+    Serial.println("INFO:SD Card is setup and files are present");
   }
   else
   {
-    Serial.println("ERROR:SDCARD_BADFILEINIT:There was an error setting up the files on the SD Card")
+    Serial.println("ERROR:SDCARD_BADFILEINIT:There was an error setting up the files on the SD Card");
   }
 
 
