@@ -1,8 +1,49 @@
 #include <SoftwareSerial.h>
-
 #include "TinyGPS.h"
+#include<stdlib.h>
+#include <SPI.h>
+#include <SD.h>
+
+#define SHOW_DEBUG
+#define SHOW_INFO
+#define SHOW_WARNING
+
+#ifdef SHOW_DEBUG
+  #define DEBUG(x) Serial.print(x)
+  #define DEBUG_DEC(x) Serial.print(x, DEC)
+  #define DEBUGLN(x) Serial.println(x)
+#else
+  #define DEBUG(x)
+  #define DEBUG_DEC(x)
+  #define DEBUGLN(x)
+#endif
+
+#ifdef SHOW_INFO
+  #define INFO(x) Serial.print(x)
+  #define INFO_DEC(x) Serial.print(x, DEC)
+  #define INFOLN(x) Serial.println(x)
+#else
+  #define INFO(x)
+  #define INFO_DEC(x)
+  #define INFOLN(x)
+#endif
+
+#ifdef SHOW_WARNING
+  #define WARN(x) Serial.print(x)
+  #define WARN_DEC(x) Serial.print(x, DEC)
+  #define WARNLN(x) Serial.println(x)
+#else
+  #define WARN(x)
+  #define WARN_DEC(x)
+  #define WARNLN(x)
+#endif
 
 TinyGPS gps;
+
+// Uno
+//const int chipSelect = 10;  
+// Goldilocks
+const int chipSelect = 14;  
 
 int unoRxPin = 6; // connected to Tx pin of the GPS
 int unoTxPin = 7; // connected to Rx pin of the GPS
@@ -20,6 +61,8 @@ prog_char *teststrs[4] = {str1, str2, str3, str4};
 float lastLat = 0.0;
 float lastLong = 0.0;
 boolean firstRead = true;
+
+File myFile;
 
 float haversine(float flat1, float flon1, float flat2, float flon2)
 {
@@ -73,7 +116,93 @@ float haversine(float flat1, float flon1, float flat2, float flon2)
   
   c = (2*atan2(sqrt(a),sqrt(1.0-a)));
   
-  return c; // distance = c * r. Return distance in feet
+  return c * 20925525; // distance = c * r. Return distance in feet
+}
+
+int writeSDCard(char *filename, String txtToWrite, boolean append = true)
+{
+  DEBUG("DEBUG:Opening '");
+  DEBUG(filename);
+  DEBUGLN("' for writing");
+        
+  if (SD.exists(filename)) {
+    if(append == false)
+    {
+      SD.remove(filename);
+    }
+      myFile = SD.open(filename, FILE_WRITE);
+      if(myFile)
+      {
+        myFile.print(txtToWrite);
+        myFile.close();
+        DEBUG("DEBUG: Text '");
+        DEBUG(txtToWrite);
+        DEBUGLN("' written successfully");
+        return 0;
+      }
+      else
+      {
+        WARN("ERROR:Unable to open '");
+        WARN(filename);
+        WARNLN("' for writing");
+        return -1;
+      }
+    }
+    else {
+      WARN("ERROR:The file '");
+      WARN(filename);
+      WARNLN("' does not exist");
+      return -1;
+    }
+}
+
+int sdCardFileSetup(char *filename, String defaultText)
+{
+  DEBUG("DEBUG:Checking if '");
+  DEBUG(filename);
+  DEBUG("' exists: ");
+
+  if (SD.exists(filename)) {
+      DEBUGLN("YES");
+      return 0;
+    }
+    else {
+      DEBUGLN("NO");
+
+      DEBUG("DEBUG:Creating'");
+      DEBUG(filename);
+      DEBUG("' and writing default text '");
+      DEBUG(defaultText);
+      DEBUGLN("'");
+
+      if(writeSDCard(filename, defaultText, false))
+      {
+        DEBUGLN("DEBUG: Default text write success");
+        return 0;
+      }
+      else
+      {
+        WARN("ERROR:Unable to write default text to '");
+        WARN(filename);
+        WARNLN("'");
+        return -1;
+      }
+    }
+}
+
+int sdCardSetup()
+{
+  DEBUGLN("DEBUG:Initializing SD card...");
+  if (!SD.begin(chipSelect)) {
+    WARNLN("ERROR:SDCARD_FAILED:initialization failed.");
+    return -1;
+  } else {
+    DEBUGLN("DEBUG:Wiring is correct and a SD card is present.");
+    pinMode(10, OUTPUT);
+    
+    sdCardFileSetup("history.txt","Lat,Long,Date(ddmmyy),Time(hhmmsscc)");
+    return 0;
+  }
 }
 
 void setup()
@@ -84,13 +213,25 @@ void setup()
   // start hard serial port to communicate with the computer
   Serial.begin(9600);
   
-  startMillis = millis();
-  
-  for (int i=0; i<4; ++i)
+  if(sdCardSetup()==0)  //No errors setting up the SD card
   {
-    sendstring(gps, teststrs[i]);
-    gpsdump();
+    INFOLN("INFO:SD Card is setup and files are present");
+    
+    startMillis = millis();
+  
+    for (int i=0; i<4; ++i)
+    {
+      sendstring(gps, teststrs[i]);
+      gpsdump();
+    }
   }
+  else
+  {
+    WARNLN("ERROR:SDCARD_BADFILEINIT:There was an error setting up the files on the SD Card");
+  }
+
+  
+  
 }
 
 static void sendstring(TinyGPS &gps, const PROGMEM char *str)
@@ -108,6 +249,32 @@ static void sendstring(TinyGPS &gps, const PROGMEM char *str)
 void loop()
 {
   
+}
+
+
+int saveHistoryLine(float flat, float flon, unsigned long date, unsigned long ftime)
+{
+  
+  DEBUGLN("DEBUG:Saving history line");
+  myFile = SD.open("history.txt", FILE_WRITE);
+  if(myFile)
+  {
+    myFile.print(flat);
+    myFile.print(",");
+    myFile.print(flon);
+    myFile.print(",");
+    myFile.print(date);
+    myFile.print(",");
+    myFile.println(ftime);
+    myFile.close();
+    DEBUG("DEBUG: History line written successfully");
+    return 0;
+  }
+  else
+  {
+    WARN("ERROR:Unable to open history.txt for writing");
+    return -1;
+  }
 }
 
 void gpsdump()
@@ -144,6 +311,10 @@ void gpsdump()
   Serial.print("Date(ddmmyy): "); Serial.print(date); Serial.print(" Time(hhmmsscc): ");
   Serial.print(time);
   
+  saveHistoryLine(flat, flon, date, time);
+  
+  
+  
   if(firstRead)
   {
     firstRead = false;
@@ -155,6 +326,9 @@ void gpsdump()
     Serial.print(distance);
     Serial.print(" feet");
   }
+  lastLat = flat;
+  lastLong = flon;
+  
   Serial.println();
   
   
