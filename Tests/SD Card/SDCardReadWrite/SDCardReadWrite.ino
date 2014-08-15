@@ -156,8 +156,6 @@ int sdCardFileSetup(char *filename, String defaultText)
     }
 }
 
-
-
 void showSDCardFileContents(char *filename)
 {
   DEBUG("DEBUG:Showing contents of file '");
