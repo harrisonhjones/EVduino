@@ -25,8 +25,16 @@
 // Devices with higher bit address might not be seen properly.
 //
 
-#include <Wire.h>
+// --------------------------------------
+// WIRING INFO
+// I2C Device <-> Arduino UNO
+// scl        <-> a5
+// sda        <-> a4
+// ground     <-> ground
+// vcc/5v     <-> 5v
 
+
+#include <Wire.h>
 
 void setup()
 {
